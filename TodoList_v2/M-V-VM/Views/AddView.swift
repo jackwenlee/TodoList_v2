@@ -13,6 +13,9 @@ struct AddView: View {
     @EnvironmentObject var listViewModel: ListViewModel
     @State var textFieldString: String = ""
     
+    @State var alertTitle: String = ""
+    @State var showAlert: Bool = false
+    
     var body: some View {
         ScrollView {
             
@@ -40,13 +43,28 @@ struct AddView: View {
             
         }
         .navigationTitle("Add an Item 🖊️")
+        .alert(isPresented: $showAlert, content: getAlertMessage)
     }
     
     func saveButtonPressed() {
-        listViewModel.addItem(title: textFieldString)
-        presentationMode.wrappedValue.dismiss()
+        if textIsAppropriate() {
+            listViewModel.addItem(title: textFieldString)
+            presentationMode.wrappedValue.dismiss()
+        }
     }
     
+    func textIsAppropriate() -> Bool {
+        if textFieldString.count < 3 {
+            alertTitle = "Your new to-do item must be at least 3 characters wrong!"
+            showAlert.toggle()
+            return false
+        }
+        return true
+    }
+    
+    func getAlertMessage() -> Alert {
+        return Alert(title: Text(alertTitle))
+    }
     
 }
 
